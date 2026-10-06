@@ -1,0 +1,1613 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PETUALANGAN BHÂSA MADURA - Undhag-Âbhâsnâ Bhâsa</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        madura: {
+                            red: '#dc2626',
+                            redDark: '#991b1b',
+                            blue: '#1e3a8a',
+                            cyan: '#06b6d4',
+                            gold: '#f59e0b',
+                            emerald: '#10b981',
+                            dark: '#0f172a'
+                        }
+                    },
+                    fontFamily: {
+                        head: ['Fredoka', 'sans-serif'],
+                        body: ['Nunito', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 40%, #172554 100%);
+            min-height: 100vh;
+            color: #f8fafc;
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        h1, h2, h3, h4, .font-head {
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.82);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-4px);
+            background: rgba(255, 255, 255, 0.14);
+            box-shadow: 0 12px 30px rgba(6, 182, 212, 0.25);
+        }
+
+        .btn-bounce {
+            transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .btn-bounce:hover {
+            transform: scale(1.04);
+        }
+
+        .btn-bounce:active {
+            transform: scale(0.96);
+        }
+
+        .pulse-glow {
+            animation: pulseGlow 2.5s infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 15px rgba(220, 38, 38, 0.4); }
+            100% { box-shadow: 0 0 35px rgba(245, 158, 11, 0.8); }
+        }
+
+        /* Red & White Stripe Motif for Madura accent */
+        .madura-stripe {
+            background: repeating-linear-gradient(
+                45deg,
+                rgba(220, 38, 38, 0.8),
+                rgba(220, 38, 38, 0.8) 12px,
+                rgba(255, 255, 255, 0.9) 12px,
+                rgba(255, 255, 255, 0.9) 24px
+            );
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(6, 182, 212, 0.5);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(6, 182, 212, 0.8);
+        }
+
+        .draggable-item {
+            cursor: grab;
+        }
+        .draggable-item:active {
+            cursor: grabbing;
+        }
+        .drop-target.hovered {
+            border-color: #06b6d4;
+            background-color: rgba(6, 182, 212, 0.25);
+        }
+    </style>
+</head>
+<body class="flex flex-col justify-between min-h-screen relative overflow-x-hidden">
+
+    <canvas id="bgCanvas" class="fixed top-0 left-0 w-full h-full pointer-events-none z-0"></canvas>
+
+    <header class="relative z-20 w-full px-4 py-3 flex justify-between items-center bg-slate-900/80 border-b border-slate-700/60 backdrop-blur-md">
+        <div class="flex items-center space-x-3 cursor-pointer" onclick="navigateTo('home')">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-red-600 via-amber-500 to-blue-600 flex items-center justify-center text-white font-bold text-xl shadow-lg border border-amber-400/40">
+                🐮
+            </div>
+            <div>
+                <h1 class="text-base md:text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-amber-300 to-cyan-300">
+                    PETUALANGAN BHÂSA MADURA
+                </h1>
+                <p class="text-xs text-slate-400">Undhag-Âbhâsnâ Bhâsa • SMP Fase D</p>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-2">
+            <button id="btnHome" onclick="navigateTo('home')" title="Halaman Utama" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-slate-700 transition btn-bounce hidden">
+                <i class="fas fa-home text-lg"></i>
+            </button>
+            <button id="btnSound" onclick="toggleAudio()" title="Suara / Audio" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 transition btn-bounce">
+                <i id="soundIcon" class="fas fa-volume-up text-lg"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="relative z-10 flex-grow container mx-auto px-4 py-6 flex items-center justify-center">
+
+        <!-- ==========================================
+             1. HOME SCREEN
+             ========================================== -->
+        <section id="screen-home" class="w-full max-w-4xl glass-panel rounded-3xl p-6 md:p-10 text-center relative overflow-hidden transition-all duration-300">
+            <div class="absolute -top-24 -right-24 w-60 h-60 bg-red-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-24 -left-24 w-60 h-60 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <!-- Red-White Madura Accent Bar -->
+            <div class="w-28 h-2 mx-auto rounded-full madura-stripe mb-4 shadow-sm"></div>
+
+            <!-- Title Header -->
+            <div class="inline-block px-4 py-1.5 rounded-full bg-red-500/10 border border-red-500/30 text-red-300 text-xs md:text-sm font-semibold mb-3">
+                🌴 Media Pembelajaran Bahasa Daerah Madura (Fase D)
+            </div>
+            
+            <h1 class="text-3xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-amber-300 to-cyan-300 mb-2 tracking-wide">
+                🐮 PETUALANGAN BHÂSA MADURA
+            </h1>
+            <p class="text-base md:text-lg font-medium text-slate-300 mb-6 italic">
+                “Ngonjhugi bân memahami Undhag-Âbhâsnâ Bhâsa Madura!”
+            </p>
+
+            <!-- Illustrated Banner Card -->
+            <div class="relative my-6 max-w-xl mx-auto rounded-2xl overflow-hidden border-2 border-slate-700 shadow-2xl bg-gradient-to-b from-slate-900 to-slate-800 p-5">
+                <div class="flex items-center justify-around gap-2 my-2">
+                    <div class="text-center">
+                        <div class="w-16 h-16 md:w-20 md:h-20 mx-auto rounded-full bg-slate-800 border-2 border-red-500 flex items-center justify-center text-3xl md:text-4xl shadow-inner">
+                            🗣️
+                        </div>
+                        <span class="text-xs text-red-300 font-bold block mt-2">Enja'-Iya</span>
+                        <span class="text-[10px] text-slate-400 block">Teman Sebaya</span>
+                    </div>
+                    <div class="text-2xl text-amber-400 font-bold">⚡</div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 md:w-20 md:h-20 mx-auto rounded-full bg-slate-800 border-2 border-amber-400 flex items-center justify-center text-3xl md:text-4xl shadow-inner">
+                            🤝
+                        </div>
+                        <span class="text-xs text-amber-300 font-bold block mt-2">Undhag-Âbhâsnâ</span>
+                        <span class="text-[10px] text-slate-400 block">Tingkatan Bahasa</span>
+                    </div>
+                    <div class="text-2xl text-amber-400 font-bold">⚡</div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 md:w-20 md:h-20 mx-auto rounded-full bg-slate-800 border-2 border-cyan-400 flex items-center justify-center text-3xl md:text-4xl shadow-inner">
+                            🙏
+                        </div>
+                        <span class="text-xs text-cyan-300 font-bold block mt-2">Engghi-Bhântên</span>
+                        <span class="text-[10px] text-slate-400 block">Guru & Orang Tua</span>
+                    </div>
+                </div>
+                <p class="text-xs md:text-sm text-slate-300 mt-4 leading-relaxed">
+                    Uji pemahamanmu dalam menggunakan tingkat tutur kata Bahasa Madura secara sopan, tepat, dan menyenangkan!
+                </p>
+            </div>
+
+            <!-- Login Form (Prior to Login) -->
+            <div id="login-form" class="max-w-md mx-auto space-y-4 text-left glass-card p-6 rounded-2xl mb-6">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-300 mb-1">Nama Siswa <span class="text-red-400">*</span></label>
+                    <div class="relative">
+                        <i class="fas fa-user absolute left-3.5 top-3.5 text-slate-400"></i>
+                        <input type="text" id="inputName" placeholder="Ketik nama lengkapmu..." class="w-full bg-slate-900/90 border border-slate-700 rounded-xl py-2.5 pl-10 pr-4 text-white focus:outline-none focus:border-red-400 focus:ring-1 focus:ring-red-400 text-sm">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-slate-300 mb-1">Kelas SMP (Fase D) <span class="text-red-400">*</span></label>
+                    <div class="relative">
+                        <i class="fas fa-graduation-cap absolute left-3.5 top-3.5 text-slate-400"></i>
+                        <select id="selectClass" class="w-full bg-slate-900/90 border border-slate-700 rounded-xl py-2.5 pl-10 pr-4 text-white focus:outline-none focus:border-red-400 focus:ring-1 focus:ring-red-400 text-sm">
+                            <option value="">-- Pilih Kelas SMP --</option>
+                            <option value="7-A">Kelas VII - A</option>
+                            <option value="7-B">Kelas VII - B</option>
+                            <option value="8-A">Kelas VIII - A</option>
+                            <option value="8-B">Kelas VIII - B</option>
+                            <option value="9-A">Kelas IX - A</option>
+                            <option value="9-B">Kelas IX - B</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button onclick="handleLogin()" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-red-600 via-amber-500 to-red-600 hover:from-red-500 hover:to-amber-400 text-white font-bold text-base shadow-lg shadow-red-600/30 btn-bounce flex items-center justify-center space-x-2 mt-4">
+                    <span>🚀 MULAI PETUALANGAN</span>
+                </button>
+            </div>
+
+            <!-- Main Menu Buttons (Hidden until logged in) -->
+            <div id="main-menu" class="hidden max-w-xl mx-auto space-y-4">
+                <div id="userWelcome" class="text-amber-300 font-bold mb-4 text-base md:text-lg bg-slate-800/90 py-2.5 px-4 rounded-xl border border-amber-500/30"></div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <button onclick="navigateTo('materi')" class="p-4 rounded-2xl bg-gradient-to-r from-blue-700 to-cyan-600 hover:from-blue-600 hover:to-cyan-500 text-white font-bold flex items-center justify-center space-x-3 shadow-lg btn-bounce">
+                        <span class="text-2xl">📚</span>
+                        <span class="text-lg">MATERI</span>
+                    </button>
+
+                    <button onclick="navigateTo('difficulty')" class="p-4 rounded-2xl bg-gradient-to-r from-red-600 to-amber-500 hover:from-red-500 hover:to-amber-400 text-white font-bold flex items-center justify-center space-x-3 shadow-lg btn-bounce pulse-glow">
+                        <span class="text-2xl">🎮</span>
+                        <span class="text-lg">MULAI GAME</span>
+                    </button>
+
+                    <button onclick="navigateTo('leaderboard')" class="p-4 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold flex items-center justify-center space-x-3 shadow-lg btn-bounce">
+                        <span class="text-2xl">🏆</span>
+                        <span class="text-lg">PERINGKAT</span>
+                    </button>
+
+                    <button onclick="navigateTo('developer')" class="p-4 rounded-2xl bg-gradient-to-r from-slate-700 to-slate-800 hover:from-slate-600 hover:to-slate-700 text-white font-bold flex items-center justify-center space-x-3 shadow-lg btn-bounce border border-slate-600">
+                        <span class="text-2xl">👨‍💻</span>
+                        <span class="text-lg">PENGEMBANG</span>
+                    </button>
+                </div>
+
+                <button onclick="logoutUser()" class="mt-4 text-xs text-slate-400 hover:text-slate-200 underline">
+                    Ganti Profil Siswa
+                </button>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             2. MATERI PAGE
+             ========================================== -->
+        <section id="screen-materi" class="w-full max-w-4xl glass-panel rounded-3xl p-6 md:p-8 hidden">
+            <!-- Header Materi -->
+            <div class="flex justify-between items-center border-b border-slate-700 pb-4 mb-6">
+                <div>
+                    <span class="text-xs font-bold text-red-400 uppercase tracking-wider">Modul Pembelajaran Bahasa Madura</span>
+                    <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                        <span>📚</span> <span id="materiTitle">Materi 1 — Apa itu Undhag-Âbhâsnâ?</span>
+                    </h2>
+                </div>
+                <div class="text-xs font-bold bg-slate-800 text-amber-300 px-3 py-1 rounded-full border border-slate-700">
+                    <span id="materiStep">1</span> / 4
+                </div>
+            </div>
+
+            <!-- Content Container -->
+            <div id="materiContent" class="min-h-[300px] text-slate-200 leading-relaxed text-sm md:text-base space-y-4">
+                <!-- Injected via JS -->
+            </div>
+
+            <!-- Mini Check Understanding Box -->
+            <div id="materiQuizBox" class="mt-6 p-4 rounded-2xl bg-slate-800/90 border border-amber-500/30 text-left">
+                <div class="flex items-center gap-2 text-amber-300 font-bold mb-2 text-sm">
+                    <span>💡</span> <span>Cek Pemahaman Singkat (Abal-balan)</span>
+                </div>
+                <p id="miniQuizQuestion" class="text-sm font-medium mb-3 text-white"></p>
+                <div id="miniQuizOptions" class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <!-- Injected via JS -->
+                </div>
+                <div id="miniQuizFeedback" class="mt-2 text-xs font-bold hidden"></div>
+            </div>
+
+            <!-- Navigation Controls -->
+            <div class="flex flex-wrap justify-between items-center mt-8 pt-4 border-t border-slate-700/60 gap-3">
+                <button id="btnPrevMateri" onclick="prevMateri()" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-sm flex items-center space-x-2 btn-bounce">
+                    <span>⬅️</span> <span>Sebelumnya</span>
+                </button>
+                <button onclick="navigateTo('home')" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 font-semibold text-sm flex items-center space-x-2 btn-bounce">
+                    <span>🏠</span> <span>Menu Utama</span>
+                </button>
+                <button id="btnNextMateri" onclick="nextMateri()" class="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-semibold text-sm flex items-center space-x-2 btn-bounce">
+                    <span>Selanjutnya</span> <span>➡️</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             3. DIFFICULTY SELECTION SCREEN
+             ========================================== -->
+        <section id="screen-difficulty" class="w-full max-w-4xl glass-panel rounded-3xl p-6 md:p-8 text-center hidden">
+            <h2 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-amber-300 to-cyan-300 mb-2">
+                🎮 Pilih Tingkat Kesulitan
+            </h2>
+            <p class="text-slate-300 text-sm md:text-base mb-8">
+                Pilih tantangan yang paling sesuai dengan tingkat pemahaman Bahasa Madura kamu!
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-left mb-8">
+                <!-- Mudah -->
+                <div onclick="selectDifficulty('easy')" id="card-easy" class="glass-card rounded-2xl p-6 border-2 border-emerald-500/30 hover:border-emerald-400 cursor-pointer relative group">
+                    <div class="text-emerald-400 text-3xl mb-3">🟢</div>
+                    <h3 class="text-xl font-bold text-emerald-300 mb-1">MUDAH</h3>
+                    <p class="text-xs text-emerald-200/80 font-semibold mb-4">“Penjelajah Pemula”</p>
+                    <ul class="text-xs text-slate-300 space-y-2 mb-4">
+                        <li>• 🎯 5 Skenario Kehidupan Dasar</li>
+                        <li>• 🗣️ Kata Ganti & Kata Kerja Umum</li>
+                        <li>• 🔢 3 Pilihan Jawaban</li>
+                        <li>• ⏳ Tanpa Timer (Santai)</li>
+                        <li>• ⭐ 10 Poin / Soal Benar</li>
+                    </ul>
+                    <div class="text-center pt-2 border-t border-slate-700/50">
+                        <span class="inline-block text-xs font-bold text-emerald-400 group-hover:underline">Pilih Level Ini ➔</span>
+                    </div>
+                </div>
+
+                <!-- Sedang -->
+                <div onclick="selectDifficulty('medium')" id="card-medium" class="glass-card rounded-2xl p-6 border-2 border-amber-500/30 hover:border-amber-400 cursor-pointer relative group">
+                    <div class="text-amber-400 text-3xl mb-3">🟡</div>
+                    <h3 class="text-xl font-bold text-amber-300 mb-1">SEDANG</h3>
+                    <p class="text-xs text-amber-200/80 font-semibold mb-4">“Penjelajah Hebat”</p>
+                    <ul class="text-xs text-slate-300 space-y-2 mb-4">
+                        <li>• 🎯 8 Skenario + Drag & Drop</li>
+                        <li>• 🧠 Percakapan Guru & Orang Tua</li>
+                        <li>• 🔢 3–4 Pilihan Jawaban</li>
+                        <li>• ⏱️ Timer 30 Detik / Soal</li>
+                        <li>• ⭐ 15 Poin / Soal Benar</li>
+                    </ul>
+                    <div class="text-center pt-2 border-t border-slate-700/50">
+                        <span class="inline-block text-xs font-bold text-amber-400 group-hover:underline">Pilih Level Ini ➔</span>
+                    </div>
+                </div>
+
+                <!-- Sulit -->
+                <div onclick="selectDifficulty('hard')" id="card-hard" class="glass-card rounded-2xl p-6 border-2 border-red-500/30 hover:border-red-400 cursor-pointer relative group">
+                    <div class="text-red-400 text-3xl mb-3">🔴</div>
+                    <h3 class="text-xl font-bold text-red-300 mb-1">SULIT</h3>
+                    <p class="text-xs text-red-200/80 font-semibold mb-4">“Ahli Bhâsa Madura”</p>
+                    <ul class="text-xs text-slate-300 space-y-2 mb-4">
+                        <li>• 🎯 10 Skenario Kompleks & Match</li>
+                        <li>• 🧩 Variasi Game Lengkap</li>
+                        <li>• 🔢 4 Pilihan Jawaban</li>
+                        <li>• ⏱️ Timer 20 Detik / Soal</li>
+                        <li>• ⭐ 20 Poin / Soal Benar</li>
+                    </ul>
+                    <div class="text-center pt-2 border-t border-slate-700/50">
+                        <span class="inline-block text-xs font-bold text-red-400 group-hover:underline">Pilih Level Ini ➔</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Confirmation Modal / Prompt -->
+            <div id="diffConfirmBox" class="hidden p-6 rounded-2xl bg-slate-800/90 border border-amber-400/50 max-w-lg mx-auto text-center animate-fade-in">
+                <p id="diffConfirmText" class="text-lg font-bold text-amber-300 mb-4">
+                    “Ampon siap alampa'agi kuis petualangan bhâsa?”
+                </p>
+                <div class="flex justify-center space-x-4">
+                    <button onclick="startGame()" class="px-8 py-3 rounded-xl bg-gradient-to-r from-red-600 to-amber-500 hover:from-red-500 hover:to-amber-400 text-white font-bold text-base shadow-lg btn-bounce">
+                        🚀 MULAI TANTANGAN
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             4 & 5. INTERACTIVE QUIZ & GAMEPLAY SCREEN
+             ========================================== -->
+        <section id="screen-game" class="w-full max-w-3xl glass-panel rounded-3xl p-5 md:p-8 hidden">
+            <!-- Top Status Bar -->
+            <div class="bg-slate-900/90 rounded-2xl p-3 md:p-4 mb-6 border border-slate-700 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 text-center text-xs md:text-sm font-semibold">
+                <div class="text-cyan-300 truncate" title="Nama"><i class="fas fa-user text-cyan-400"></i> <span id="gameUser">Siswa</span></div>
+                <div class="text-amber-300" title="Kelas"><i class="fas fa-school text-amber-400"></i> <span id="gameClass">7-A</span></div>
+                <div class="text-emerald-400" title="Skor"><i class="fas fa-star text-emerald-400"></i> <span id="gameScore">0</span></div>
+                <div class="text-red-400" title="Nyawa"><span id="gameLives">❤️❤️❤️</span></div>
+                <div class="text-purple-300" title="Progress"><i class="fas fa-list text-purple-400"></i> <span id="gameProgress">1/5</span></div>
+                <div class="text-yellow-400 font-bold" title="Timer"><i class="fas fa-stopwatch text-yellow-400"></i> <span id="gameTimer">--s</span></div>
+            </div>
+
+            <!-- Situation & Character Avatar Box -->
+            <div class="bg-gradient-to-r from-slate-900 to-slate-800 p-4 rounded-2xl border border-slate-700 mb-4 flex items-center space-x-4">
+                <div class="w-14 h-14 rounded-full bg-red-600/30 border-2 border-red-400 flex flex-shrink-0 items-center justify-center text-2xl shadow-inner">
+                    <span id="situationAvatar">🏫</span>
+                </div>
+                <div>
+                    <span id="questionCategory" class="text-[10px] md:text-xs font-bold px-2.5 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/30 uppercase tracking-wider">
+                        Skenario Kehidupan
+                    </span>
+                    <h4 id="situationContext" class="text-xs md:text-sm font-bold text-amber-300 mt-1">
+                        Situsi: Bertamu ke rumah Guru
+                    </h4>
+                </div>
+            </div>
+
+            <!-- Question Card Header -->
+            <div class="mb-4">
+                <div class="flex justify-between items-center mb-2">
+                    <span id="questionTypeBadge" class="text-xs font-bold px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                        Pilihan Ganda
+                    </span>
+                </div>
+                <h3 id="questionText" class="text-base md:text-lg font-bold text-white leading-snug">
+                    Teks pertanyaan akan ditampilkan di sini...
+                </h3>
+            </div>
+
+            <!-- Dynamic Question Body Area -->
+            <div id="gameInteractiveArea" class="my-6 min-h-[200px]">
+                <!-- Will be dynamically populated with Multiple Choice, Drag & Drop, or True/False UI -->
+            </div>
+
+            <!-- Feedback Message Box -->
+            <div id="feedbackBox" class="hidden p-4 rounded-2xl mb-4 text-center text-xs md:text-sm font-bold leading-relaxed">
+                <!-- Dynamic feedback -->
+            </div>
+
+            <!-- Bottom Action Controls -->
+            <div class="flex justify-between items-center pt-2">
+                <button onclick="quitGamePrompt()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 text-xs font-semibold">
+                    🏳️ Keluar Game
+                </button>
+                <button id="btnNextQuestion" onclick="nextQuestion()" class="hidden px-6 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-sm shadow-md btn-bounce">
+                    Lanjut ➔
+                </button>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             6. RESULTS SCREEN
+             ========================================== -->
+        <section id="screen-result" class="w-full max-w-2xl glass-panel rounded-3xl p-6 md:p-8 text-center hidden">
+            <h1 class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-red-400 to-yellow-300 mb-1">
+                🏆 HASIL PETUALANGANMU
+            </h1>
+            <p class="text-xs md:text-sm text-slate-300 mb-6">Hebat! Kamu telah menyelesaikan kuis Undhag-Âbhâsnâ Bhâsa Madura.</p>
+
+            <!-- Badge Display Banner -->
+            <div class="p-6 rounded-3xl bg-slate-800/90 border-2 border-amber-400/50 max-w-md mx-auto mb-6 relative overflow-hidden shadow-2xl">
+                <div id="resBadgeIcon" class="text-6xl md:text-7xl mb-2 animate-bounce">
+                    🥇
+                </div>
+                <div id="resBadgeTitle" class="text-2xl font-black text-amber-300 uppercase tracking-wide">
+                    AHLI BHÂSA MADURA
+                </div>
+                <p id="resMotivation" class="text-xs md:text-sm text-slate-300 mt-2 italic">
+                    "Kemampuan tata bahasa Madura kamu sangat luar biasa!"
+                </p>
+            </div>
+
+            <!-- Performance Stats Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-left mb-6 text-xs md:text-sm">
+                <div class="p-3 rounded-xl bg-slate-800/60 border border-slate-700">
+                    <span class="text-slate-400 block text-xs">Pemain</span>
+                    <span id="resName" class="font-bold text-cyan-300 truncate block">Nama</span>
+                    <span id="resClass" class="text-slate-400 text-xs block">Kelas</span>
+                </div>
+                <div class="p-3 rounded-xl bg-slate-800/60 border border-slate-700">
+                    <span class="text-slate-400 block text-xs">Tingkat / Skor</span>
+                    <span id="resLevel" class="font-bold text-amber-300 block">Sedang</span>
+                    <span id="resTotalScore" class="font-bold text-white text-xs block">120 Pts</span>
+                </div>
+                <div class="p-3 rounded-xl bg-slate-800/60 border border-slate-700">
+                    <span class="text-slate-400 block text-xs">Jawaban</span>
+                    <span id="resCorrect" class="font-bold text-emerald-400 block">✅ 5 Benar</span>
+                    <span id="resWrong" class="font-bold text-red-400 block">❌ 0 Salah</span>
+                </div>
+                <div class="p-3 rounded-xl bg-slate-800/60 border border-slate-700">
+                    <span class="text-slate-400 block text-xs">Nilai Akhir</span>
+                    <span id="resFinalGrade" class="text-2xl font-black text-cyan-400 block">100</span>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2">
+                <button onclick="navigateTo('difficulty')" class="py-3 px-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold text-xs md:text-sm btn-bounce">
+                    🔄 MAIN LAGI
+                </button>
+                <button onclick="navigateTo('materi')" class="py-3 px-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs md:text-sm btn-bounce">
+                    📚 PELAJARI LAGI
+                </button>
+                <button onclick="navigateTo('leaderboard')" class="py-3 px-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs md:text-sm btn-bounce">
+                    🏆 LEADERBOARD
+                </button>
+                <button onclick="navigateTo('home')" class="py-3 px-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-200 font-bold text-xs md:text-sm btn-bounce">
+                    🏠 MENU UTAMA
+                </button>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             8. LEADERBOARD SCREEN
+             ========================================== -->
+        <section id="screen-leaderboard" class="w-full max-w-4xl glass-panel rounded-3xl p-6 md:p-8 hidden">
+            <div class="text-center mb-6">
+                <h2 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-200">
+                    🏆 TOP BHÂSA MADURA EXPLORERS
+                </h2>
+                <p class="text-xs md:text-sm text-slate-300">Peringkat Penjelajah Bahasa Daerah Madura Terbaik!</p>
+            </div>
+
+            <!-- Leaderboard Table Container -->
+            <div class="overflow-x-auto bg-slate-900/90 rounded-2xl border border-slate-700 p-2 mb-6">
+                <table class="w-full text-left text-xs md:text-sm text-slate-200">
+                    <thead class="text-xs uppercase bg-slate-800 text-amber-300 border-b border-slate-700">
+                        <tr>
+                            <th class="p-3 text-center">Peringkat</th>
+                            <th class="p-3">Nama Siswa</th>
+                            <th class="p-3">Kelas</th>
+                            <th class="p-3 text-center">Level</th>
+                            <th class="p-3 text-center">Skor</th>
+                            <th class="p-3 text-center">Badge</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboardTbody" class="divide-y divide-slate-800">
+                        <!-- Injected via JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="flex justify-between items-center pt-2">
+                <button onclick="navigateTo('home')" class="px-6 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold text-sm btn-bounce">
+                    🏠 Kembali ke Menu
+                </button>
+                <button onclick="navigateTo('difficulty')" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-red-600 to-amber-500 text-white font-bold text-sm btn-bounce">
+                    🎮 Main & Naikkan Peringkat
+                </button>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             9. DEVELOPER PROFILE SCREEN
+             ========================================== -->
+        <section id="screen-developer" class="w-full max-w-2xl glass-panel rounded-3xl p-6 md:p-10 text-center hidden">
+            <div class="inline-block p-1 bg-gradient-to-tr from-red-500 via-amber-400 to-cyan-500 rounded-full mb-4 shadow-xl">
+                <!-- Avatar Graphic -->
+                <div class="w-28 h-28 md:w-32 md:h-32 rounded-full bg-slate-900 flex items-center justify-center text-5xl md:text-6xl border-4 border-slate-800">
+                    👩‍🏫
+                </div>
+            </div>
+
+            <h2 class="text-2xl font-bold text-cyan-300">👨‍🏫 DEVELOPER PROFILE</h2>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-amber-300 my-1">ALWI</h1>
+            <div class="inline-block px-3 py-1 rounded-full bg-red-500/20 text-red-300 font-bold text-xs mb-4 border border-red-500/30">
+                @ALWI
+            </div>
+
+            <div class="glass-card rounded-2xl p-5 text-slate-300 text-sm space-y-2 max-w-md mx-auto mb-6 text-left border border-slate-700">
+                <p class="flex items-center gap-2"><span class="text-cyan-400">🎓</span> <strong>Guru & Educational Content Creator</strong></p>
+                <p class="flex items-center gap-2"><span class="text-amber-400">🎨</span> <strong>Canva Educator</strong></p>
+                <p class="flex items-center gap-2"><span class="text-red-400">🐮</span> <strong>Pemerhati Bahasa & Budaya Daerah Madura</strong></p>
+            </div>
+
+            <blockquote class="italic text-slate-300 font-medium text-base mb-6 bg-slate-900/80 p-4 rounded-xl border-l-4 border-amber-400">
+                “Mator sakalangkong ampon ajâr Bhâsa Madura. Teruslah belajar, untuk tetap mengajar.”
+            </blockquote>
+
+            <button onclick="navigateTo('home')" class="px-8 py-3 rounded-xl bg-gradient-to-r from-red-600 via-amber-500 to-red-600 text-white font-bold text-sm shadow-lg btn-bounce">
+                🏠 Kembali ke Menu Utama
+            </button>
+        </section>
+
+    </main>
+
+    <footer class="relative z-20 w-full py-3 text-center text-xs text-slate-400 border-t border-slate-800 bg-slate-900/80 backdrop-blur-md">
+        Fase D • Undhag-Âbhâsnâ Bhâsa Madura • @Alwi
+    </footer>
+
+    <script>
+        /* GLOBAL APPLICATION STATE */
+        const state = {
+            currentUser: null, // { name, class }
+            currentScreen: 'home',
+            soundEnabled: true,
+            currentMateriIdx: 0,
+            difficulty: 'easy', // easy, medium, hard
+            gameConfig: {
+                questionCount: 5,
+                timeLimit: 0, // 0 = no limit
+                pointsPerCorrect: 10,
+                optionsCount: 3
+            },
+            gameState: {
+                questions: [],
+                currentIdx: 0,
+                score: 0,
+                lives: 3,
+                correctCount: 0,
+                wrongCount: 0,
+                timer: 0,
+                timerInterval: null,
+                selectedOption: null,
+                dragState: {}
+            },
+            leaderboard: [
+                { rank: 1, name: "Siti Fatimah", class: "8-A", level: "SULIT", score: 200, badge: "🥇 AHLI BHÂSA MADURA" },
+                { rank: 2, name: "Achmad Sakera", class: "9-B", level: "SEDANG", score: 120, badge: "🥇 AHLI BHÂSA MADURA" },
+                { rank: 3, name: "Marlena Putri", class: "7-A", level: "SEDANG", score: 105, badge: "🥈 PENJELAJAH BHÂSA" },
+                { rank: 4, name: "Budi Utomo", class: "7-B", level: "MUDAH", score: 50, badge: "🥇 AHLI BHÂSA MADURA" }
+            ]
+        };
+
+        /* WEB AUDIO API SYNTHESIZER (No External Sound Files Needed) */
+        let audioCtx = null;
+        function getAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        function playSound(type) {
+            if (!state.soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
+                
+                if (type === 'click') {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(450, now);
+                    osc.frequency.exponentialRampToValueAtTime(850, now + 0.05);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.05);
+                } else if (type === 'correct') {
+                    const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                    notes.forEach((freq, idx) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.type = 'triangle';
+                        osc.frequency.value = freq;
+                        gain.gain.setValueAtTime(0.15, now + idx * 0.08);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.2);
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.start(now + idx * 0.08);
+                        osc.stop(now + idx * 0.08 + 0.2);
+                    });
+                } else if (type === 'wrong') {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(200, now);
+                    osc.frequency.linearRampToValueAtTime(110, now + 0.25);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.25);
+                } else if (type === 'victory') {
+                    const notes = [440, 554.37, 659.25, 880]; // A4, C#5, E5, A5
+                    notes.forEach((freq, idx) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.value = freq;
+                        gain.gain.setValueAtTime(0.2, now + idx * 0.12);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.12 + 0.35);
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.start(now + idx * 0.12);
+                        osc.stop(now + idx * 0.12 + 0.35);
+                    });
+                }
+            } catch (e) {
+                console.log('Audio error:', e);
+            }
+        }
+
+        function toggleAudio() {
+            state.soundEnabled = !state.soundEnabled;
+            const icon = document.getElementById('soundIcon');
+            if (state.soundEnabled) {
+                icon.className = 'fas fa-volume-up text-lg text-amber-400';
+                playSound('click');
+            } else {
+                icon.className = 'fas fa-volume-mute text-lg text-slate-500';
+            }
+        }
+
+        /* NAVIGATION CONTROL */
+        function navigateTo(screenId) {
+            playSound('click');
+            
+            // Guard: must be logged in for game/materi/leaderboard
+            if (screenId !== 'home' && screenId !== 'developer' && !state.currentUser) {
+                alertModal("Silakan isi Nama dan Kelas terlebih dahulu!");
+                return;
+            }
+
+            state.currentScreen = screenId;
+            
+            // Hide all screens
+            const screens = ['home', 'materi', 'difficulty', 'game', 'result', 'leaderboard', 'developer'];
+            screens.forEach(s => {
+                const el = document.getElementById(`screen-${s}`);
+                if (el) el.classList.add('hidden');
+            });
+
+            // Show selected screen
+            const target = document.getElementById(`screen-${screenId}`);
+            if (target) target.classList.remove('hidden');
+
+            // Show Home Header Button if not on Home screen
+            const btnHome = document.getElementById('btnHome');
+            if (screenId === 'home') {
+                btnHome.classList.add('hidden');
+            } else {
+                btnHome.classList.remove('hidden');
+            }
+
+            // Screen Init Callbacks
+            if (screenId === 'materi') renderMateri();
+            if (screenId === 'leaderboard') renderLeaderboard();
+        }
+
+        function handleLogin() {
+            const nameInput = document.getElementById('inputName').value.trim();
+            const classSelect = document.getElementById('selectClass').value;
+
+            if (!nameInput || !classSelect) {
+                alertModal("Wajib mengisi Nama Siswa dan memilih Kelas!");
+                return;
+            }
+
+            state.currentUser = {
+                name: nameInput,
+                class: classSelect
+            };
+
+            playSound('click');
+            document.getElementById('login-form').classList.add('hidden');
+            document.getElementById('main-menu').classList.remove('hidden');
+            document.getElementById('userWelcome').innerHTML = `Selamat datang, Penjelajah <strong>${state.currentUser.name}</strong> (${state.currentUser.class})! 👋`;
+        }
+
+        function logoutUser() {
+            playSound('click');
+            state.currentUser = null;
+            document.getElementById('inputName').value = '';
+            document.getElementById('selectClass').value = '';
+            document.getElementById('login-form').classList.remove('hidden');
+            document.getElementById('main-menu').classList.add('hidden');
+        }
+
+        /* MATERI DATA & RENDERING */
+        const materiData = [
+            {
+                step: 1,
+                title: "Materi 1 — Apa itu Undhag-Âbhâsnâ?",
+                content: `
+                    <div class="glass-card p-5 rounded-2xl border-l-4 border-red-500 space-y-3">
+                        <h4 class="text-base font-bold text-red-300">📌 Pengertian Undhag-Âbhâsnâ Bhâsa</h4>
+                        <p><strong>Undhag-Âbhâsnâ Bhâsa Madura</strong> adalah tingkatan tata cara tutur kata dalam Bahasa Madura yang digunakan untuk menghormati lawan bicara sesuai umur, kedudukan, atau hubungan kekerabatan.</p>
+                        <p>Secara garis besar, tingkatan bahasa dibagi menjadi dua kelompok utama:</p>
+                        <ul class="list-disc list-inside space-y-1 text-slate-300 pl-2 text-xs md:text-sm">
+                            <li><strong class="text-amber-300">1. Bhâsa Enja'-Iya (Lobi/Kasar):</strong> Digunakan untuk berbicara kepada teman sebaya, anak-anak, atau orang yang sudah akrab.</li>
+                            <li><strong class="text-cyan-300">2. Bhâsa Engghi-Bhântên (Halus/Sopan):</strong> Digunakan untuk berbicara kepada orang tua, guru, kiai/tokoh, atau orang yang baru dikenal.</li>
+                        </ul>
+                    </div>
+                `,
+                miniQuiz: {
+                    q: "Tingkatan bahasa apakah yang digunakan jika kita berbicara dengan teman sebaya?",
+                    options: ["Bhâsa Engghi-Bhântên", "Bhâsa Enja'-Iya", "Bhâsa Krama Inggil"],
+                    correctIdx: 1,
+                    exp: "Bhâsa Enja'-Iya digunakan untuk lawan bicara teman sebaya atau orang yang sudah sangat akrab."
+                }
+            },
+            {
+                step: 2,
+                title: "Materi 2 — Kata Ganti Orang (Oca' Gantana Orèng)",
+                content: `
+                    <div class="glass-card p-5 rounded-2xl border-l-4 border-amber-400 space-y-3">
+                        <h4 class="text-base font-bold text-amber-300">🤝 Perbandingan Kata Ganti Orang</h4>
+                        <p>Perhatikan perbedaan penggunaan kata ganti berikut:</p>
+                        <div class="overflow-x-auto rounded-xl border border-slate-700 bg-slate-900/80 p-2">
+                            <table class="w-full text-xs md:text-sm text-left">
+                                <thead class="bg-slate-800 text-amber-300 border-b border-slate-700">
+                                    <tr>
+                                        <th class="p-2">Arti (B. Indonesia)</th>
+                                        <th class="p-2">Enja'-Iya (Informal)</th>
+                                        <th class="p-2">Engghi-Bhântên (Halus)</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-800">
+                                    <tr><td class="p-2 font-semibold">Saya</td><td class="p-2 text-red-300">Sengko'</td><td class="p-2 text-cyan-300">Bula / Abdina</td></tr>
+                                    <tr><td class="p-2 font-semibold">Kamu / Anda</td><td class="p-2 text-red-300">Bâ'na</td><td class="p-2 text-cyan-300">Apanjhenengan / Dhika / Sampeyan</td></tr>
+                                    <tr><td class="p-2 font-semibold">Dia / Beliau</td><td class="p-2 text-red-300">Dhibi'na</td><td class="p-2 text-cyan-300">Panjhenenganna</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `,
+                miniQuiz: {
+                    q: "Apa padanan kata 'Kamu/Anda' yang sopan (Engghi-Bhântên) saat berbicara kepada Guru?",
+                    options: ["Bâ'na", "Sengko'", "Apanjhenengan"],
+                    correctIdx: 2,
+                    exp: "'Apanjhenengan' adalah kata ganti orang kedua yang sangat sopan (Engghi-Bhântên)."
+                }
+            },
+            {
+                step: 3,
+                title: "Materi 3 — Kata Kerja Utama (Oca' Lako)",
+                content: `
+                    <div class="glass-card p-5 rounded-2xl border-l-4 border-cyan-400 space-y-3">
+                        <h4 class="text-base font-bold text-cyan-300">🏃 Contoh Kata Kerja Sehari-hari</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs md:text-sm pt-1">
+                            <div class="bg-slate-800/90 p-3 rounded-xl border border-slate-700">
+                                <span class="text-amber-400 font-bold block mb-1">🍚 Makan</span>
+                                <p>• <strong>Enja'-Iya:</strong> Mangan / Kakan</p>
+                                <p>• <strong>Engghi-Bhântên:</strong> Dahar / Nèdha</p>
+                            </div>
+                            <div class="bg-slate-800/90 p-3 rounded-xl border border-slate-700">
+                                <span class="text-amber-400 font-bold block mb-1">🚶 Datang</span>
+                                <p>• <strong>Enja'-Iya:</strong> Dateng</p>
+                                <p>• <strong>Engghi-Bhântên:</strong> Rabu / Bhatang</p>
+                            </div>
+                            <div class="bg-slate-800/90 p-3 rounded-xl border border-slate-700">
+                                <span class="text-amber-400 font-bold block mb-1">😴 Tidur</span>
+                                <p>• <strong>Enja'-Iya:</strong> Tèdung</p>
+                                <p>• <strong>Engghi-Bhântên:</strong> Saren</p>
+                            </div>
+                            <div class="bg-slate-800/90 p-3 rounded-xl border border-slate-700">
+                                <span class="text-amber-400 font-bold block mb-1">🏠 Pergi / Pulang</span>
+                                <p>• <strong>Enja'-Iya:</strong> Molang / Kèkèr</p>
+                                <p>• <strong>Engghi-Bhântên:</strong> Meyos / Miya</p>
+                            </div>
+                        </div>
+                    </div>
+                `,
+                miniQuiz: {
+                    q: "Kata kerja 'Tidur' untuk orang tua atau guru dalam Bhâsa Engghi-Bhântên adalah...",
+                    options: ["Tèdung", "Saren", "Mangan"],
+                    correctIdx: 1,
+                    exp: "'Saren' adalah bentuk halus (Engghi-Bhântên) dari kata tidur."
+                }
+            },
+            {
+                step: 4,
+                title: "Materi 4 — Etika Percakapan dalam Kehidupan",
+                content: `
+                    <div class="glass-card p-5 rounded-2xl border-l-4 border-emerald-400 space-y-3">
+                        <h4 class="text-base font-bold text-emerald-300">🌱 Penerapan Etika Berbahasa Madura</h4>
+                        <p>Menggunakan <strong>Undhag-Âbhâsnâ</strong> secara benar merupakan wujud rasa hormat (*Tataniti bân Tatakrama*) pada budaya Madura.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs md:text-sm pt-2">
+                            <div class="bg-slate-800/90 p-3 rounded-xl border border-red-500/30">
+                                <span class="text-red-400 font-bold block text-sm mb-1">👥 Dengan Teman</span>
+                                <p class="text-slate-300">Boleh menggunakan Bhâsa Enja'-Iya agar suasana lebih akrab dan santai.</p>
+                            </div>
+                            <div class="bg-slate-800/90 p-3 rounded-xl border border-cyan-500/30">
+                                <span class="text-cyan-400 font-bold block text-sm mb-1">👨‍🏫 Dengan Guru / Orang Tua</span>
+                                <p class="text-slate-300">Wajib menggunakan Bhâsa Engghi-Bhântên untuk menunjukkan rasa hormat dan kesantunan.</p>
+                            </div>
+                        </div>
+                    </div>
+                `,
+                miniQuiz: {
+                    q: "Mengapa kita wajib menggunakan Bhâsa Engghi-Bhântên kepada Guru?",
+                    options: ["Agar dianggap bergaya", "Wujud rasa hormat dan etika kesantunan", "Agar tidak perlu belajar"],
+                    correctIdx: 1,
+                    exp: "Penggunaan Engghi-Bhântên adalah wujud penghormatan dan etika tatakrama Madura."
+                }
+            }
+        ];
+
+        function renderMateri() {
+            const data = materiData[state.currentMateriIdx];
+            document.getElementById('materiTitle').innerText = data.title;
+            document.getElementById('materiStep').innerText = data.step;
+            document.getElementById('materiContent').innerHTML = data.content;
+
+            // Render Mini Quiz
+            document.getElementById('miniQuizQuestion').innerText = data.miniQuiz.q;
+            const optBox = document.getElementById('miniQuizOptions');
+            optBox.innerHTML = '';
+            
+            data.miniQuiz.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'py-2 px-3 rounded-xl bg-slate-900 hover:bg-slate-700 text-slate-200 text-xs font-semibold text-left transition border border-slate-700';
+                btn.innerText = `${String.fromCharCode(65 + idx)}. ${opt}`;
+                btn.onclick = () => checkMiniQuiz(idx, data.miniQuiz.correctIdx, data.miniQuiz.exp);
+                optBox.appendChild(btn);
+            });
+
+            document.getElementById('miniQuizFeedback').classList.add('hidden');
+
+            // Button States
+            document.getElementById('btnPrevMateri').disabled = (state.currentMateriIdx === 0);
+            document.getElementById('btnPrevMateri').style.opacity = (state.currentMateriIdx === 0) ? '0.5' : '1';
+            
+            const btnNext = document.getElementById('btnNextMateri');
+            if (state.currentMateriIdx === materiData.length - 1) {
+                btnNext.innerHTML = '<span>Main Game</span> <span>🎮</span>';
+                btnNext.onclick = () => navigateTo('difficulty');
+            } else {
+                btnNext.innerHTML = '<span>Selanjutnya</span> <span>➡️</span>';
+                btnNext.onclick = nextMateri;
+            }
+        }
+
+        function checkMiniQuiz(selectedIdx, correctIdx, exp) {
+            const fb = document.getElementById('miniQuizFeedback');
+            fb.classList.remove('hidden');
+            if (selectedIdx === correctIdx) {
+                playSound('correct');
+                fb.className = "mt-2 text-xs font-bold text-emerald-400 p-2 bg-emerald-500/10 rounded-lg border border-emerald-500/30";
+                fb.innerHTML = `✅ Bhenner (Benar)! ${exp}`;
+            } else {
+                playSound('wrong');
+                fb.className = "mt-2 text-xs font-bold text-red-400 p-2 bg-red-500/10 rounded-lg border border-red-500/30";
+                fb.innerHTML = `❌ Gi' tak tepat. Jawaban yang benar pilihan ke-${correctIdx + 1}. ${exp}`;
+            }
+        }
+
+        function nextMateri() {
+            if (state.currentMateriIdx < materiData.length - 1) {
+                state.currentMateriIdx++;
+                playSound('click');
+                renderMateri();
+            }
+        }
+
+        function prevMateri() {
+            if (state.currentMateriIdx > 0) {
+                state.currentMateriIdx--;
+                playSound('click');
+                renderMateri();
+            }
+        }
+
+        /* DIFFICULTY & GAME CONFIGURATION */
+        function selectDifficulty(level) {
+            playSound('click');
+            state.difficulty = level;
+
+            // Highlight Cards
+            ['easy', 'medium', 'hard'].forEach(l => {
+                const card = document.getElementById(`card-${l}`);
+                if (l === level) {
+                    card.classList.add('ring-4', 'ring-red-500', 'bg-slate-800/90');
+                } else {
+                    card.classList.remove('ring-4', 'ring-red-500', 'bg-slate-800/90');
+                }
+            });
+
+            // Configure Game Settings
+            if (level === 'easy') {
+                state.gameConfig = { questionCount: 5, timeLimit: 0, pointsPerCorrect: 10, optionsCount: 3 };
+            } else if (level === 'medium') {
+                state.gameConfig = { questionCount: 8, timeLimit: 30, pointsPerCorrect: 15, optionsCount: 3 };
+            } else {
+                state.gameConfig = { questionCount: 10, timeLimit: 20, pointsPerCorrect: 20, optionsCount: 4 };
+            }
+
+            document.getElementById('diffConfirmBox').classList.remove('hidden');
+        }
+
+        /* QUESTION BANK - MADURESE LANGUAGE SITUATIONS */
+        const rawQuestionBank = [
+            {
+                avatar: "👨‍🏫",
+                situation: "Bertamu ke rumah Pak Ahmad (Guru Bahasa Daerah)",
+                category: "Engghi-Bhântên",
+                type: "mc",
+                q: "Kamu ingin menanyakan apakah Pak Guru sudah makan malam. Kalimat mana yang paling sopan?",
+                options: [
+                    "Pak Ahmad ampon dahar/nèdha?",
+                    "Pak Ahmad ampon mangan?",
+                    "Pak Ahmad kakan samaniya?"
+                ],
+                answerIdx: 0,
+                exp: "Untuk guru, wajib menggunakan Bhâsa Engghi-Bhântên 'dahar/nèdha', bukan 'mangan/kakan'."
+            },
+            {
+                avatar: "⚽",
+                situation: "Bicara dengan Budi (Teman sebaya di lapangan bola)",
+                category: "Enja'-Iya",
+                type: "mc",
+                q: "Kamu ingin mengajak Budi bermain sepak bola sore ini. Kata ganti 'Kamu' yang tepat adalah...",
+                options: [
+                    "Bâ'na",
+                    "Apanjhenengan",
+                    "Abdina"
+                ],
+                answerIdx: 0,
+                exp: "Bicara dengan teman sebaya menggunakan Bhâsa Enja'-Iya 'Bâ'na'."
+            },
+            {
+                avatar: "👵",
+                situation: "Menanyakan kabar Nenek e dhalem (di rumah)",
+                category: "Engghi-Bhântên",
+                type: "mc",
+                q: "Ibu menanyakan apakah Nenek sudah tidur di kamar. Kata kerja 'Tidur' yang halus untuk Nenek adalah...",
+                options: [
+                    "Saren",
+                    "Tèdung",
+                    "Meyos"
+                ],
+                answerIdx: 0,
+                exp: "'Saren' adalah bentuk halus Engghi-Bhântên untuk kata tidur bagi orang tua/nenek."
+            },
+            {
+                avatar: "🏫",
+                situation: "Minta izin kepada Kepala Sekolah e kantor",
+                category: "Engghi-Bhântên",
+                type: "mc",
+                q: "Siswa hendak berpamitan pulang duluan kepada Kepala Sekolah. Kalimat yang tepat adalah...",
+                options: [
+                    "Bula nyo'on idi bade meyos/molang dhi'ing.",
+                    "Sengko' kabbis molang dhi'ing.",
+                    "Bâ'na molang dhi'ing Bapak."
+                ],
+                answerIdx: 0,
+                exp: "Kata ganti 'Bula' (Saya) dan kata kerja 'meyos' (pulang/pergi) merupakan bentuk Engghi-Bhântên yang sopan."
+            },
+            {
+                avatar: "👦",
+                situation: "Menasihati Adik kecil (Ale') e dapur",
+                category: "Enja'-Iya",
+                type: "mc",
+                q: "Kamu memberitahu adik bahwa makanan sudah siap di meja. Kata kerja 'makan' untuk adik adalah...",
+                options: [
+                    "Mangan",
+                    "Dahar",
+                    "Rabu"
+                ],
+                answerIdx: 0,
+                exp: "Kepada adik kecil, cukup menggunakan Bhâsa Enja'-Iya 'mangan'."
+            },
+            {
+                avatar: "🕌",
+                situation: "Melihat Kiai baru tiba e Pesantren",
+                category: "Engghi-Bhântên",
+                type: "mc",
+                q: "Bagaimana cara menyebut 'Kiai sudah datang' dengan bahasa yang sangat sopan?",
+                options: [
+                    "Kiai ampon rabu e pondok.",
+                    "Kiai ampon dateng e pondok.",
+                    "Kiai kabbis dateng e pondok."
+                ],
+                answerIdx: 0,
+                exp: "'Rabu' adalah kata Engghi-Bhântên untuk 'datang' bagi tokoh atau kiai."
+            },
+            {
+                avatar: "🛒",
+                situation: "Berbelanja e Pasar Tradisional Madura",
+                category: "Situasi Campuran",
+                type: "tf",
+                q: "BENAR atau SALAH: Saat berbicara kepada penjual tua di pasar, kita sebaiknya menggunakan Bhâsa Engghi-Bhântên.",
+                isTrue: true,
+                exp: "BENAR! Kepada orang yang lebih tua meskipun penjual di pasar, etika kesantunan Madura mengajarkan Bhâsa Engghi-Bhântên."
+            },
+            {
+                avatar: "💬",
+                situation: "Membedakan Tingkatan Tutur Kata",
+                category: "Situasi Campuran",
+                type: "tf",
+                q: "BENAR atau SALAH: Kata 'Sengko'' dan 'Abdina' memiliki tingkat kesantunan yang persis sama.",
+                isTrue: false,
+                exp: "SALAH! 'Sengko'' adalah Bhâsa Enja'-Iya (kasar/informal), sedangkan 'Abdina' adalah Bhâsa Engghi-Bhântên (sangat halus)."
+            },
+            {
+                avatar: "🧩",
+                situation: "Pencocokan Kata Kerja (Oca' Lako)",
+                category: "Drag & Drop",
+                type: "drag",
+                q: "🧩 JODOHKAN KATA: Tarik kata Bhâsa Enja'-Iya di kiri ke pasangan Engghi-Bhântên yang sesuai di kanan!",
+                pairs: [
+                    { hero: "Mangan", role: "Dahar / Nèdha (Makan)" },
+                    { hero: "Dateng", role: "Rabu (Datang)" },
+                    { hero: "Tèdung", role: "Saren (Tidur)" }
+                ],
+                exp: "Hebat! Kamu berhasil mencocokkan kata Enja'-Iya dengan Engghi-Bhântên!"
+            },
+            {
+                avatar: "🤝",
+                situation: "Pencocokan Kata Ganti Orang",
+                category: "Drag & Drop",
+                type: "drag",
+                q: "🧩 JODOHKAN KATA GANTI: Tarik kata ganti Enja'-Iya ke bentuk Engghi-Bhântên yang pas!",
+                pairs: [
+                    { hero: "Sengko'", role: "Bula / Abdina (Saya)" },
+                    { hero: "Bâ'na", role: "Apanjhenengan (Kamu/Anda)" },
+                    { hero: "Dhibi'na", role: "Panjhenenganna (Dia/Beliau)" }
+                ],
+                exp: "Sangat baguus! Pemahaman kata ganti bahasa Madura kamu mantap!"
+            }
+        ];
+
+        /* GAMEPLAY LOGIC */
+        function startGame() {
+            playSound('click');
+            navigateTo('game');
+
+            // Setup Player Info UI
+            document.getElementById('gameUser').innerText = state.currentUser.name;
+            document.getElementById('gameClass').innerText = state.currentUser.class;
+
+            // Prepare Questions
+            let questionsPool = JSON.parse(JSON.stringify(rawQuestionBank));
+            
+            // Shuffle Pool
+            questionsPool.sort(() => Math.random() - 0.5);
+
+            // Filter or slice based on question count
+            state.gameState.questions = questionsPool.slice(0, state.gameConfig.questionCount);
+
+            // Reset Game State Counters
+            state.gameState.currentIdx = 0;
+            state.gameState.score = 0;
+            state.gameState.lives = 3;
+            state.gameState.correctCount = 0;
+            state.gameState.wrongCount = 0;
+
+            updateGameHeaderUI();
+            renderQuestion();
+        }
+
+        function updateGameHeaderUI() {
+            document.getElementById('gameScore').innerText = state.gameState.score;
+            document.getElementById('gameLives').innerText = "❤️".repeat(state.gameState.lives) || "💀";
+            document.getElementById('gameProgress').innerText = `${state.gameState.currentIdx + 1}/${state.gameState.questions.length}`;
+        }
+
+        function renderQuestion() {
+            // Reset Feedback & Next Button
+            const fb = document.getElementById('feedbackBox');
+            fb.classList.add('hidden');
+            document.getElementById('btnNextQuestion').classList.add('hidden');
+
+            const qData = state.gameState.questions[state.gameState.currentIdx];
+            document.getElementById('situationAvatar').innerText = qData.avatar || '🐮';
+            document.getElementById('situationContext').innerText = `Situasi: ${qData.situation}`;
+            document.getElementById('questionCategory').innerText = qData.category;
+            document.getElementById('questionText').innerText = qData.q;
+
+            const interactiveArea = document.getElementById('gameInteractiveArea');
+            interactiveArea.innerHTML = '';
+
+            // Handle Timer
+            clearInterval(state.gameState.timerInterval);
+            if (state.gameConfig.timeLimit > 0) {
+                state.gameState.timer = state.gameConfig.timeLimit;
+                document.getElementById('gameTimer').innerText = `${state.gameState.timer}s`;
+                state.gameState.timerInterval = setInterval(() => {
+                    state.gameState.timer--;
+                    document.getElementById('gameTimer').innerText = `${state.gameState.timer}s`;
+                    if (state.gameState.timer <= 0) {
+                        clearInterval(state.gameState.timerInterval);
+                        handleAnswerTimeout();
+                    }
+                }, 1000);
+            } else {
+                document.getElementById('gameTimer').innerText = '∞';
+            }
+
+            // Render based on Question Type
+            if (qData.type === 'mc') {
+                document.getElementById('questionTypeBadge').innerText = 'Pilihan Ganda';
+                const grid = document.createElement('div');
+                grid.className = 'grid grid-cols-1 gap-3';
+                
+                qData.options.forEach((optText, idx) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'opt-btn p-4 rounded-2xl bg-slate-800/80 hover:bg-slate-700/80 border-2 border-slate-700 hover:border-red-400 text-left text-xs md:text-sm font-semibold text-slate-100 transition btn-bounce flex items-center space-x-3';
+                    btn.innerHTML = `<span class="w-7 h-7 rounded-lg bg-slate-900 flex flex-shrink-0 items-center justify-center font-bold text-red-400 border border-slate-700 text-xs">${String.fromCharCode(65 + idx)}</span> <span>${optText}</span>`;
+                    btn.onclick = () => checkMcAnswer(idx, btn);
+                    grid.appendChild(btn);
+                });
+                interactiveArea.appendChild(grid);
+
+            } else if (qData.type === 'tf') {
+                document.getElementById('questionTypeBadge').innerText = 'Benar / Salah';
+                const container = document.createElement('div');
+                container.className = 'flex flex-col sm:flex-row justify-center items-center gap-4 py-4';
+                
+                const btnTrue = document.createElement('button');
+                btnTrue.className = 'w-full sm:w-1/2 p-5 rounded-2xl bg-emerald-600/30 hover:bg-emerald-600/50 border-2 border-emerald-500 text-emerald-200 font-bold text-lg btn-bounce flex flex-col items-center gap-2';
+                btnTrue.innerHTML = '<span class="text-3xl">✅</span> <span>BHENNER (BENAR)</span>';
+                btnTrue.onclick = () => checkTfAnswer(true, btnTrue);
+
+                const btnFalse = document.createElement('button');
+                btnFalse.className = 'w-full sm:w-1/2 p-5 rounded-2xl bg-red-600/30 hover:bg-red-600/50 border-2 border-red-500 text-red-200 font-bold text-lg btn-bounce flex flex-col items-center gap-2';
+                btnFalse.innerHTML = '<span class="text-3xl">❌</span> <span>SALA (SALAH)</span>';
+                btnFalse.onclick = () => checkTfAnswer(false, btnFalse);
+
+                container.appendChild(btnTrue);
+                container.appendChild(btnFalse);
+                interactiveArea.appendChild(container);
+
+            } else if (qData.type === 'drag') {
+                document.getElementById('questionTypeBadge').innerText = '🎯 Drag & Drop';
+                renderDragAndDrop(qData, interactiveArea);
+            }
+        }
+
+        /* ANSWER EVALUATION & FEEDBACK */
+        function checkMcAnswer(selectedIdx, btnElement) {
+            clearInterval(state.gameState.timerInterval);
+            disableAllInteractiveOptions();
+
+            const qData = state.gameState.questions[state.gameState.currentIdx];
+            const isCorrect = (selectedIdx === qData.answerIdx);
+
+            if (isCorrect) {
+                btnElement.classList.add('border-emerald-400', 'bg-emerald-500/20');
+                processCorrectAnswer(qData.exp);
+            } else {
+                btnElement.classList.add('border-red-500', 'bg-red-500/20');
+                processWrongAnswer(qData.exp, `Jawaban Benar: ${qData.options[qData.answerIdx]}`);
+            }
+        }
+
+        function checkTfAnswer(selectedBool, btnElement) {
+            clearInterval(state.gameState.timerInterval);
+            disableAllInteractiveOptions();
+
+            const qData = state.gameState.questions[state.gameState.currentIdx];
+            const isCorrect = (selectedBool === qData.isTrue);
+
+            if (isCorrect) {
+                btnElement.classList.add('ring-4', 'ring-emerald-400');
+                processCorrectAnswer(qData.exp);
+            } else {
+                btnElement.classList.add('ring-4', 'ring-red-500');
+                processWrongAnswer(qData.exp, `Jawaban Benar: ${qData.isTrue ? 'BHENNER (BENAR)' : 'SALA (SALAH)'}`);
+            }
+        }
+
+        function renderDragAndDrop(qData, container) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'space-y-4';
+
+            const heroes = [...qData.pairs].map(p => p.hero).sort(() => Math.random() - 0.5);
+            
+            wrapper.innerHTML = `
+                <div class="text-xs text-amber-300 font-semibold mb-2">Tap/Geser kata Enja'-Iya di atas lalu pasangkan ke padanan Engghi-Bhântên di bawah:</div>
+                <div id="dragHeroesBox" class="flex flex-wrap gap-2 mb-4 p-3 bg-slate-900/80 rounded-xl border border-slate-700">
+                    ${heroes.map(h => `<div draggable="true" ondragstart="handleDragStart(event, '${h}')" onclick="selectHeroChip('${h}', this)" class="hero-chip draggable-item px-3 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-bold shadow cursor-pointer border border-red-400">${h}</div>`).join('')}
+                </div>
+
+                <div class="space-y-3">
+                    ${qData.pairs.map((p, i) => `
+                        <div class="flex items-center gap-2 p-3 bg-slate-800/80 rounded-xl border border-slate-700">
+                            <span class="text-xs font-bold text-cyan-300 w-1/2">${p.role}</span>
+                            <div id="drop-target-${i}" ondragover="handleDragOver(event)" ondrop="handleDrop(event, ${i})" onclick="dropChipOnClick(${i})" class="drop-target flex-grow p-2.5 min-h-[42px] rounded-lg bg-slate-900 border-2 border-dashed border-slate-600 text-xs font-bold text-amber-300 flex items-center justify-center">
+                                Tap/Drop di sini
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <button onclick="checkDragAndDropAnswers()" class="w-full py-3 mt-3 rounded-xl bg-gradient-to-r from-red-600 to-amber-500 text-white font-bold text-sm shadow btn-bounce">
+                    ✅ Periksa Jodohkan
+                </button>
+            `;
+
+            container.appendChild(wrapper);
+            state.gameState.dragState = {
+                pairs: qData.pairs,
+                selectedChip: null,
+                userAnswers: {}
+            };
+        }
+
+        let currentActiveChipText = null;
+
+        function selectHeroChip(text, el) {
+            currentActiveChipText = text;
+            document.querySelectorAll('.hero-chip').forEach(c => c.classList.remove('ring-2', 'ring-amber-400'));
+            el.classList.add('ring-2', 'ring-amber-400');
+            playSound('click');
+        }
+
+        function dropChipOnClick(targetIdx) {
+            if (!currentActiveChipText) return;
+            const targetEl = document.getElementById(`drop-target-${targetIdx}`);
+            targetEl.innerText = currentActiveChipText;
+            targetEl.classList.add('bg-red-500/20', 'border-red-400');
+            state.gameState.dragState.userAnswers[targetIdx] = currentActiveChipText;
+            playSound('click');
+        }
+
+        function handleDragStart(ev, heroText) {
+            ev.dataTransfer.setData("text/plain", heroText);
+            currentActiveChipText = heroText;
+        }
+
+        function handleDragOver(ev) {
+            ev.preventDefault();
+        }
+
+        function handleDrop(ev, targetIdx) {
+            ev.preventDefault();
+            const heroText = ev.dataTransfer.getData("text/plain") || currentActiveChipText;
+            if (heroText) {
+                const targetEl = document.getElementById(`drop-target-${targetIdx}`);
+                targetEl.innerText = heroText;
+                targetEl.classList.add('bg-red-500/20', 'border-red-400');
+                state.gameState.dragState.userAnswers[targetIdx] = heroText;
+                playSound('click');
+            }
+        }
+
+        function checkDragAndDropAnswers() {
+            clearInterval(state.gameState.timerInterval);
+            const ds = state.gameState.dragState;
+            let allCorrect = true;
+
+            ds.pairs.forEach((pair, idx) => {
+                const userAns = ds.userAnswers[idx];
+                if (userAns !== pair.hero) {
+                    allCorrect = false;
+                }
+            });
+
+            const qData = state.gameState.questions[state.gameState.currentIdx];
+
+            if (allCorrect) {
+                processCorrectAnswer(qData.exp);
+            } else {
+                processWrongAnswer(qData.exp, "Beberapa pasangan kata belum tepat!");
+            }
+        }
+
+        function handleAnswerTimeout() {
+            disableAllInteractiveOptions();
+            const qData = state.gameState.questions[state.gameState.currentIdx];
+            processWrongAnswer("Waktu habis!", "Kamu tidak menjawab tepat waktu.");
+        }
+
+        function processCorrectAnswer(exp) {
+            playSound('correct');
+            confettiEffect();
+
+            state.gameState.score += state.gameConfig.pointsPerCorrect;
+            state.gameState.correctCount++;
+
+            showFeedback(true, `✅ Bhenner! (Hebat, jawabanmu benar!)<br><span class="text-xs font-normal">${exp}</span>`);
+            updateGameHeaderUI();
+            document.getElementById('btnNextQuestion').classList.remove('hidden');
+        }
+
+        function processWrongAnswer(exp, extraDetail) {
+            playSound('wrong');
+
+            state.gameState.lives--;
+            state.gameState.wrongCount++;
+
+            showFeedback(false, `❌ Sala (Belum tepat). Yuk, pelajari lagi!<br><span class="text-xs font-normal">${extraDetail} - ${exp}</span>`);
+            updateGameHeaderUI();
+
+            if (state.gameState.lives <= 0) {
+                setTimeout(() => {
+                    alertModal("Nyawamu habis! Game over.", () => finishGame());
+                }, 1200);
+            } else {
+                document.getElementById('btnNextQuestion').classList.remove('hidden');
+            }
+        }
+
+        function showFeedback(isCorrect, htmlMsg) {
+            const fb = document.getElementById('feedbackBox');
+            fb.classList.remove('hidden', 'bg-emerald-500/20', 'border-emerald-500', 'text-emerald-300', 'bg-red-500/20', 'border-red-500', 'text-red-300');
+            
+            if (isCorrect) {
+                fb.classList.add('bg-emerald-500/20', 'border', 'border-emerald-500', 'text-emerald-300');
+            } else {
+                fb.classList.add('bg-red-500/20', 'border', 'border-red-500', 'text-red-300');
+            }
+            fb.innerHTML = htmlMsg;
+        }
+
+        function disableAllInteractiveOptions() {
+            const buttons = document.querySelectorAll('#gameInteractiveArea button');
+            buttons.forEach(b => b.disabled = true);
+        }
+
+        function nextQuestion() {
+            playSound('click');
+            if (state.gameState.currentIdx < state.gameState.questions.length - 1 && state.gameState.lives > 0) {
+                state.gameState.currentIdx++;
+                updateGameHeaderUI();
+                renderQuestion();
+            } else {
+                finishGame();
+            }
+        }
+
+        function quitGamePrompt() {
+            if (confirm("Apakah kamu yakin ingin keluar dari permainan saat ini?")) {
+                clearInterval(state.gameState.timerInterval);
+                navigateTo('home');
+            }
+        }
+
+        /* RESULT & LEADERBOARD RENDERING */
+        function finishGame() {
+            clearInterval(state.gameState.timerInterval);
+            playSound('victory');
+            confettiEffect();
+            navigateTo('result');
+
+            const totalQ = state.gameState.questions.length;
+            const correct = state.gameState.correctCount;
+            const finalScore = Math.round((correct / totalQ) * 100);
+
+            // Populate Results UI
+            document.getElementById('resName').innerText = state.currentUser.name;
+            document.getElementById('resClass').innerText = state.currentUser.class;
+            document.getElementById('resLevel').innerText = state.difficulty.toUpperCase();
+            document.getElementById('resTotalScore').innerText = `${state.gameState.score} Pts`;
+            document.getElementById('resCorrect').innerText = `✅ ${correct} Benar`;
+            document.getElementById('resWrong').innerText = `❌ ${state.gameState.wrongCount} Salah`;
+            document.getElementById('resFinalGrade').innerText = finalScore;
+
+            // Badges
+            let badgeTitle = "";
+            let badgeIcon = "";
+            let motivation = "";
+
+            if (finalScore >= 90) {
+                badgeIcon = "🥇";
+                badgeTitle = "AHLI BHÂSA MADURA";
+                motivation = "Mator sakalangkong! Pengetahuan Undhag-Âbhâsnâ Bhâsa kamu sangat luar biasa!";
+            } else if (finalScore >= 80) {
+                badgeIcon = "🥈";
+                badgeTitle = "PENJELAJAH BHÂSA";
+                motivation = "Bagus sekali! Pemahaman tatakrama berbahasa Madura kamu sudah sangat mantap!";
+            } else if (finalScore >= 70) {
+                badgeIcon = "🥉";
+                badgeTitle = "PEMBELAJAR TEKUN";
+                motivation = "Bagus! Kamu sudah memahami konsep dasar tata bahasa. Tingkatkan terus belajarmu!";
+            } else {
+                badgeIcon = "📚";
+                badgeTitle = "BELAJAR LAGI";
+                motivation = "Maju terus! Yuk pelajari lagi modul materi dan coba tantangannya kembali!";
+            }
+
+            document.getElementById('resBadgeIcon').innerText = badgeIcon;
+            document.getElementById('resBadgeTitle').innerText = badgeTitle;
+            document.getElementById('resMotivation').innerText = motivation;
+
+            // Record to Local Leaderboard State
+            state.leaderboard.push({
+                rank: 0,
+                name: state.currentUser.name,
+                class: state.currentUser.class,
+                level: state.difficulty.toUpperCase(),
+                score: state.gameState.score,
+                badge: `${badgeIcon} ${badgeTitle}`
+            });
+
+            // Sort Leaderboard by score
+            state.leaderboard.sort((a, b) => b.score - a.score);
+            state.leaderboard.forEach((item, idx) => item.rank = idx + 1);
+        }
+
+        function renderLeaderboard() {
+            const tbody = document.getElementById('leaderboardTbody');
+            tbody.innerHTML = '';
+
+            state.leaderboard.forEach((entry) => {
+                const tr = document.createElement('tr');
+                const isCurrent = (state.currentUser && entry.name === state.currentUser.name && entry.class === state.currentUser.class);
+                
+                tr.className = isCurrent 
+                    ? 'bg-red-500/20 border-l-4 border-red-400 font-bold' 
+                    : 'hover:bg-slate-800/50';
+
+                let rankBadge = `${entry.rank}`;
+                if (entry.rank === 1) rankBadge = '🥇 1';
+                else if (entry.rank === 2) rankBadge = '🥈 2';
+                else if (entry.rank === 3) rankBadge = '🥉 3';
+
+                tr.innerHTML = `
+                    <td class="p-3 text-center font-bold text-amber-300">${rankBadge}</td>
+                    <td class="p-3 font-semibold text-white">${entry.name} ${isCurrent ? '<span class="text-xs bg-red-500 text-white px-1.5 py-0.5 rounded ml-1">Kamu</span>' : ''}</td>
+                    <td class="p-3 text-slate-300">${entry.class}</td>
+                    <td class="p-3 text-center text-xs font-bold text-slate-400">${entry.level}</td>
+                    <td class="p-3 text-center font-extrabold text-cyan-300">${entry.score}</td>
+                    <td class="p-3 text-center text-xs font-semibold text-amber-300">${entry.badge}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        /* CANVAS BACKGROUND ANIMATION */
+        function initBgCanvas() {
+            const canvas = document.getElementById('bgCanvas');
+            const ctx = canvas.getContext('2d');
+
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            const particles = Array.from({ length: 45 }, () => ({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                radius: Math.random() * 2 + 1,
+                color: ['rgba(220, 38, 38, ', 'rgba(245, 158, 11, ', 'rgba(6, 182, 212, '][Math.floor(Math.random() * 3)],
+                alpha: Math.random() * 0.5 + 0.2,
+                vx: (Math.random() - 0.5) * 0.5,
+                vy: (Math.random() - 0.5) * 0.5
+            }));
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+
+                    if (p.x < 0) p.x = canvas.width;
+                    if (p.x > canvas.width) p.x = 0;
+                    if (p.y < 0) p.y = canvas.height;
+                    if (p.y > canvas.height) p.y = 0;
+
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = p.color + p.alpha + ')';
+                    ctx.fill();
+                });
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        function confettiEffect() {
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 70,
+                    spread: 60,
+                    origin: { y: 0.6 }
+                });
+            }
+        }
+
+        /* Modal Dialog Alert Utility */
+        function alertModal(msg, callback) {
+            playSound('click');
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in';
+            modal.innerHTML = `
+                <div class="glass-panel p-6 rounded-2xl max-w-sm w-full text-center border border-red-400/50 space-y-4">
+                    <div class="text-3xl">💡</div>
+                    <p class="text-slate-200 text-sm font-semibold">${msg}</p>
+                    <button id="modalBtn" class="px-6 py-2 rounded-xl bg-red-600 text-white font-bold text-xs hover:bg-red-500 shadow btn-bounce">OK</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            document.getElementById('modalBtn').onclick = () => {
+                document.body.removeChild(modal);
+                if (callback) callback();
+            };
+        }
+
+        /* INITIALIZATION ON WINDOW LOAD */
+        window.onload = function() {
+            initBgCanvas();
+            renderMateri();
+        };
+    </script>
+</body>
+</html>
